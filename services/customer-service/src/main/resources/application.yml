@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: customer-service
+
+  mongodb:
+    username: mongo
+    password: mongo
+    host: localhost
+    port: 27017
+    database: ecommerce
+    authentication-database: admin
+
+server:
+  port: 8090
+
+

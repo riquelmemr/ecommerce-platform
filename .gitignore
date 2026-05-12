@@ -1,0 +1,21 @@
+# MacOS
+.DS_Store
+
+# IntelliJ
+.idea
+*.iml
+
+# VSCode
+.vscode
+
+# Maven
+target/
+
+# Logs
+*.log
+
+# Env
+.env
+
+# OS
+Thumbs.db

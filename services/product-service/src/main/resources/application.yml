@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: product-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ecommerce
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: product
+
+  flyway:
+    enabled: true
+    default-schema: product
+    schemas: product
+    locations: classpath:db/migration
+
+server:
+  port: 8050
+
+
