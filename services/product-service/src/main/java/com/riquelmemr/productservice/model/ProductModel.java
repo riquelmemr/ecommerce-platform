@@ -22,8 +22,8 @@ public class ProductModel {
 
     private String name;
     private String description;
-    private double stock;
-    private double reserved;
+    private int stock;
+    private int reserved;
     private BigDecimal price;
 
     @ManyToMany

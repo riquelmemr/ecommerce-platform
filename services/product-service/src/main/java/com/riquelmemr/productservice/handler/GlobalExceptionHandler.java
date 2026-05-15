@@ -1,8 +1,11 @@
 package com.riquelmemr.productservice.handler;
 
 import com.riquelmemr.productservice.dto.ErrorResponse;
+import com.riquelmemr.productservice.exception.CategoryCodeAlreadyExistsException;
+import com.riquelmemr.productservice.exception.CategoryNotFoundException;
 import com.riquelmemr.productservice.exception.CategoriesNotFoundException;
 import com.riquelmemr.productservice.exception.ProductNotFoundException;
+import com.riquelmemr.productservice.exception.ProductsNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -21,7 +24,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleProductNotFound(
             ProductNotFoundException exception
     ) {
-
         ErrorResponse response = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 exception.getMessage(),
@@ -33,18 +35,63 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(CategoriesNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCategoriesNotFound(
-            CategoriesNotFoundException exception
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryNotFound(
+            CategoryNotFoundException exception
     ) {
         ErrorResponse response = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.NOT_FOUND.value(),
                 exception.getMessage(),
                 LocalDateTime.now(),
                 null
         );
 
-        return ResponseEntity.badRequest()
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
+    @ExceptionHandler(CategoryCodeAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryCodeAlreadyExists(
+            CategoryCodeAlreadyExistsException exception
+    ) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                exception.getMessage(),
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
+    @ExceptionHandler(CategoriesNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCategoriesNotFound(
+            CategoriesNotFoundException exception
+    ) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(),
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
+    @ExceptionHandler(ProductsNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductsNotFound(
+            ProductsNotFoundException exception
+    ) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(),
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
 

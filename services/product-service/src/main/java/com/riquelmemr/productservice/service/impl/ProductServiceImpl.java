@@ -5,6 +5,7 @@ import com.riquelmemr.productservice.dto.ProductRequest;
 import com.riquelmemr.productservice.dto.ProductResponse;
 import com.riquelmemr.productservice.dto.ProductUpdateRequest;
 import com.riquelmemr.productservice.exception.ProductNotFoundException;
+import com.riquelmemr.productservice.exception.ProductsNotFoundException;
 import com.riquelmemr.productservice.model.CategoryModel;
 import com.riquelmemr.productservice.model.ProductModel;
 import com.riquelmemr.productservice.repository.ProductRepository;
@@ -17,8 +18,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.BooleanUtils.isFalse;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +71,25 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
 
         return productResponseConverter.convert(product);
+    }
+
+    @Override
+    public List<ProductModel> findByIds(List<Long> productIds) {
+        List<ProductModel> products = productRepository.findByIdIn(productIds);
+
+        Set<Long> foundedIds = products.stream()
+                .map(ProductModel::getId)
+                .collect(Collectors.toSet());
+
+        Set<Long> missingIds = productIds.stream()
+                .filter(id -> isFalse(foundedIds.contains(id)))
+                .collect(Collectors.toSet());
+
+        if (!missingIds.isEmpty()) {
+            throw new ProductsNotFoundException(missingIds);
+        }
+
+        return products;
     }
 
     @Override

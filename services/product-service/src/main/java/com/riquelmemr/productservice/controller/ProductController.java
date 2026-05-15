@@ -1,8 +1,7 @@
 package com.riquelmemr.productservice.controller;
 
-import com.riquelmemr.productservice.dto.ProductRequest;
-import com.riquelmemr.productservice.dto.ProductResponse;
-import com.riquelmemr.productservice.dto.ProductUpdateRequest;
+import com.riquelmemr.productservice.dto.*;
+import com.riquelmemr.productservice.service.ProductPurchaseService;
 import com.riquelmemr.productservice.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +17,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductPurchaseService productPurchaseService;
 
     @GetMapping
     public ResponseEntity<List<ProductResponse>> findAll() {
@@ -35,6 +35,12 @@ public class ProductController {
     public ResponseEntity<ProductResponse> create(@RequestBody @Valid ProductRequest request) {
         ProductResponse response = productService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/purchase")
+    public ResponseEntity<ProductsPurchaseResponse> purchase(@RequestBody @Valid ProductsPurchaseRequest request) {
+        ProductsPurchaseResponse response = productPurchaseService.purchase(request);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")

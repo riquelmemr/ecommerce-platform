@@ -15,9 +15,7 @@ public record ProductRequest(
         String description,
 
         @Positive(message = "Stock should be positive")
-        double stock,
-
-        double reserved,
+        Integer stock,
 
         @Positive(message = "Price should be positive")
         BigDecimal price,

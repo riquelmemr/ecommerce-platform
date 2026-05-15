@@ -1,8 +1,6 @@
 package com.riquelmemr.productservice.dto;
 
-public record CategoryResponse(
-
-        Long id,
+public record CategoryUpdateRequest(
 
         String code,
 

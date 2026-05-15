@@ -1,20 +1,17 @@
 package com.riquelmemr.productservice.dto;
 
 import java.math.BigDecimal;
-import java.util.Set;
 
-public record ProductUpdateRequest(
+public record ProductPurchaseResponse(
+
+        Long productId,
 
         String name,
 
         String description,
 
-        Integer stock,
-
-        Integer reserved,
-
         BigDecimal price,
 
-        Set<String> categoryCodes
+        Integer quantity
 ) {
 }
