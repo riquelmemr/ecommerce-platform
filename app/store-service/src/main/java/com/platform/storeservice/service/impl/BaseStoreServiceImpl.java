@@ -62,7 +62,7 @@ public class BaseStoreServiceImpl implements BaseStoreService {
             validateCodeIsAvailable(request.code(), id);
         }
 
-        updateEntity(model, request);
+        mergeStore(model, request);
 
         BaseStoreModel savedModel = baseStoreRepository.save(model);
 
@@ -87,7 +87,7 @@ public class BaseStoreServiceImpl implements BaseStoreService {
         });
     }
 
-    private void updateEntity(BaseStoreModel model, BaseStoreUpdateRequest request) {
+    private void mergeStore(BaseStoreModel model, BaseStoreUpdateRequest request) {
         if (isNotEmpty(request.code())) {
             model.setCode(request.code());
         }
