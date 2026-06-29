@@ -1,0 +1,10 @@
+server:
+  port: 8081
+
+spring:
+  flyway:
+    schemas: store
+  jpa:
+    properties:
+      hibernate:
+        default_schema: store
