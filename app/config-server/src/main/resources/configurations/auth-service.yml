@@ -1,0 +1,18 @@
+server:
+  port: 8082
+
+spring:
+  flyway:
+    schemas: auth
+  jpa:
+    properties:
+      hibernate:
+        default_schema: auth
+
+jwt:
+  private-key: classpath:keys/private.pem
+  public-key: classpath:keys/public.pem
+  access-token:
+    expiration: 900000     # 15m
+  refresh-token:
+    expiration: 604800000  # 7d

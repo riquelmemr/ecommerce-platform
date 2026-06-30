@@ -31,8 +31,8 @@ public class BaseStoreServiceImpl implements BaseStoreService {
     public BaseStoreResponse create(BaseStoreRequest request) {
         validateCodeIsAvailable(request.code(), null);
 
-        BaseStoreModel model = baseStoreMapper.toModel(request);
-        BaseStoreModel savedModel = baseStoreRepository.save(model);
+        final BaseStoreModel model = baseStoreMapper.toModel(request);
+        final BaseStoreModel savedModel = baseStoreRepository.save(model);
 
         return baseStoreMapper.toResponse(savedModel);
     }
@@ -40,7 +40,7 @@ public class BaseStoreServiceImpl implements BaseStoreService {
     @Override
     @Transactional(readOnly = true)
     public BaseStoreResponse findById(UUID id) {
-        BaseStoreModel model = baseStoreRepository.findById(id)
+        final BaseStoreModel model = baseStoreRepository.findById(id)
                 .orElseThrow(() -> new BaseStoreNotFoundException(id));
 
         return baseStoreMapper.toResponse(model);
@@ -55,7 +55,7 @@ public class BaseStoreServiceImpl implements BaseStoreService {
     @Override
     @Transactional
     public BaseStoreResponse update(UUID id, BaseStoreUpdateRequest request) {
-        BaseStoreModel model = baseStoreRepository.findById(id)
+        final BaseStoreModel model = baseStoreRepository.findById(id)
                 .orElseThrow(() -> new BaseStoreNotFoundException(id));
 
         if (isNotEmpty(request.code())) {
@@ -64,7 +64,7 @@ public class BaseStoreServiceImpl implements BaseStoreService {
 
         mergeStore(model, request);
 
-        BaseStoreModel savedModel = baseStoreRepository.save(model);
+        final BaseStoreModel savedModel = baseStoreRepository.save(model);
 
         return baseStoreMapper.toResponse(savedModel);
     }

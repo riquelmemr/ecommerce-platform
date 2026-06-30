@@ -6,12 +6,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record BaseStoreRequest(
-        @NotBlank String code,
-        @NotBlank String name,
+        @NotBlank
+        String code,
+        @NotBlank
+        String name,
         String logoUrl,
         @HexColor
         String primaryColor,
-        @NotNull Boolean isActive,
+        @NotNull
+        Boolean isActive,
         @Domain
         String domain
 ) {

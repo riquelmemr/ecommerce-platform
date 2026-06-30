@@ -37,9 +37,9 @@ Cada marca opera como uma `BaseStore` independente com seus próprios produtos, 
 | `api-gateway` | Roteamento, validação JWT, injeção de headers | — | — |
 | `eureka-server` | Registry e descoberta de serviços | — | — |
 | `config-service` | Centralização de configurações | — | — |
-| `auth-service` | Login, emissão e renovação de JWT | `auth` | — |
+| `auth-service` | Login, emissão, renovação e revogação de JWT | `auth` | `tb_refresh_token` |
 | `store-service` | Gestão de lojas (BaseStore) e configurações | `store` | `tb_base_store` |
-| `identity-service` | Clientes, funcionários, roles e verificação de e-mail | `identity` | `tb_customer` `tb_employee` `tb_role` `tb_user_roles` `tb_user_verification` `tb_address` |
+| `identity-service` | Clientes, funcionários, roles e verificação de e-mail | `identity` | — |
 | `catalog-service` | Produtos, variantes, categorias e imagens | `catalog` | `tb_product` `tb_product_variant` `tb_product_image` `tb_category` `tb_product_categories` |
 | `inventory-service` | Warehouses e estoque | `inventory` | `tb_warehouse` `tb_stock` |
 | `cart-service` | Carrinho de compras | `cart` | `tb_cart` `tb_cart_entry` |
@@ -89,16 +89,28 @@ Cada marca opera como uma `BaseStore` independente com seus próprios produtos, 
 
 ## Autenticação e Autorização
 
-O `auth-service` emite JWTs assinados com **RS256**. O API Gateway valida o token com a chave pública e injeta os claims como headers — os microsserviços nunca acessam o JWT diretamente.
+O `auth-service` emite JWTs assinados com **RS256** e persiste refresh tokens no schema `auth`. O API Gateway valida a assinatura com a chave pública e injeta os claims como headers; os microsserviços não acessam o JWT diretamente.
 
 ### Fluxo
 
 ```
-1. POST /auth/login → auth-service emite JWT (RS256, chave privada)
-2. Requisições seguintes → Authorization: Bearer <token>
-3. API Gateway valida assinatura (chave pública) e injeta headers
-4. Microsserviços leem apenas os headers
+1. `POST /api/v1/auth/login/customer` ou `POST /api/v1/auth/login/employee`
+2. O `auth-service` autentica o usuário e emite access token + refresh token
+3. `POST /api/v1/auth/refresh` para renovar o access token
+4. `POST /api/v1/auth/logout` para revogar o refresh token
+5. Requisições seguintes usam `Authorization: Bearer <token>`
+6. O API Gateway valida a assinatura do JWT
+7. Os microsserviços leem apenas os headers injetados pelo gateway
 ```
+
+### Claims do JWT
+
+| Claim | Conteúdo |
+|---|---|
+| `sub` | ID do usuário autenticado |
+| `store_id` | ID da loja associada ao usuário |
+| `roles` | Roles do usuário |
+| `user_type` | Tipo do usuário (`CUSTOMER` ou `EMPLOYEE`) |
 
 ### Headers injetados pelo Gateway
 
@@ -107,7 +119,6 @@ O `auth-service` emite JWTs assinados com **RS256**. O API Gateway valida o toke
 | `X-User-Id` | ID do usuário autenticado |
 | `X-Store-Id` | ID da loja resolvida |
 | `X-User-Roles` | Roles do usuário |
-| `X-User-Email` | E-mail do usuário |
 
 ---
 
