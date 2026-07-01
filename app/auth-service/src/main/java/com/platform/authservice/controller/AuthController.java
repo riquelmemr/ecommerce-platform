@@ -47,7 +47,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    private AuthService getAuthService(UserType userType) {
+    private AuthService getAuthService(final UserType userType) {
         return authServiceFactory.getObject(userType);
     }
 }

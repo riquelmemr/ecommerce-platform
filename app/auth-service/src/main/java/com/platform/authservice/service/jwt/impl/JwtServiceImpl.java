@@ -23,7 +23,7 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String STORE_ID_CLAIM = "store_id";
     private static final String USER_TYPE_CLAIM = "user_type";
-    private static final String ROLE_CLAIM = "roles";
+    private static final String ROLES_CLAIM = "roles";
     private static final String TYPE_CLAIM = "type";
     private static final String TYPE_REFRESH_CLAIM_VALUE = "refresh";
 
@@ -36,7 +36,7 @@ public class JwtServiceImpl implements JwtService {
         return Jwts.builder()
                 .subject(customerId.toString())
                 .claim(STORE_ID_CLAIM, storeId.toString())
-                .claim(ROLE_CLAIM, roles)
+                .claim(ROLES_CLAIM, roles)
                 .claim(USER_TYPE_CLAIM, userType)
                 .issuedAt(new Date())
                 .expiration(getExpirationDate(TokenType.ACCESS_TOKEN))
@@ -81,7 +81,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     @SuppressWarnings("unchecked")
     public List<String> extractRoles(String token) {
-        return (List<String>) getClaims(token).get(ROLE_CLAIM, List.class);
+        return (List<String>) getClaims(token).get(ROLES_CLAIM, List.class);
     }
 
     @Override
