@@ -25,7 +25,7 @@ public class RefreshTokenModel {
     @Column(nullable = false)
     private UUID userId;
 
-    @Column(nullable = false)
+    @Column
     private UUID storeId;
 
     @Column(nullable = false)
@@ -49,9 +49,8 @@ public class RefreshTokenModel {
 
     @PrePersist
     public void prePersist() {
-        LocalDateTime now = LocalDateTime.now();
-        creationTime = now;
-        modifiedTime = now;
+        creationTime = LocalDateTime.now();
+        modifiedTime = LocalDateTime.now();
         revoked = false;
     }
 

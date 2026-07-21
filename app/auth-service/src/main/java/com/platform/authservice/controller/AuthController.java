@@ -4,7 +4,6 @@ import com.platform.authservice.dto.request.LoginRequest;
 import com.platform.authservice.dto.request.TokenRequest;
 import com.platform.authservice.dto.response.LoginResponse;
 import com.platform.authservice.enums.UserType;
-import com.platform.authservice.factory.Factory;
 import com.platform.authservice.service.auth.AuthService;
 import com.platform.authservice.service.refreshtoken.RefreshTokenService;
 import jakarta.validation.Valid;
@@ -20,18 +19,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final Factory<AuthService, UserType> authServiceFactory;
+    private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/login/customer")
     public ResponseEntity<LoginResponse> loginCustomer(@Valid @RequestBody final LoginRequest request) {
-        LoginResponse response = getAuthService(UserType.CUSTOMER).login(request);
+        LoginResponse response = authService.authenticate(request, UserType.CUSTOMER);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login/employee")
     public ResponseEntity<LoginResponse> loginEmployee(@Valid @RequestBody final LoginRequest request) {
-        LoginResponse response = getAuthService(UserType.EMPLOYEE).login(request);
+        LoginResponse response = authService.authenticate(request, UserType.EMPLOYEE);
         return ResponseEntity.ok(response);
     }
 
@@ -45,9 +44,5 @@ public class AuthController {
     public ResponseEntity<Void> logout(@Valid @RequestBody final TokenRequest request) {
         refreshTokenService.logout(request.token());
         return ResponseEntity.ok().build();
-    }
-
-    private AuthService getAuthService(final UserType userType) {
-        return authServiceFactory.getObject(userType);
     }
 }

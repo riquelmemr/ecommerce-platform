@@ -1,7 +1,7 @@
 CREATE TABLE tb_refresh_token (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
-    store_id UUID NOT NULL,
+    store_id UUID,
     user_type TEXT NOT NULL,
     token TEXT NOT NULL UNIQUE,
     expires_at TIMESTAMP NOT NULL,

@@ -4,11 +4,13 @@ import com.platform.authservice.config.JwtProperties;
 import com.platform.authservice.dto.response.LoginResponse;
 import com.platform.authservice.enums.UserType;
 import com.platform.authservice.exception.InvalidRefreshTokenException;
+import com.platform.authservice.exception.RefreshTokenException;
 import com.platform.authservice.model.RefreshTokenModel;
 import com.platform.authservice.repository.RefreshTokenRepository;
 import com.platform.authservice.service.jwt.JwtService;
 import com.platform.authservice.service.refreshtoken.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService {
@@ -28,49 +31,69 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public String create(UUID customerId, UUID storeId, UserType userType) {
-        final String token = jwtService.generateRefreshToken(customerId, storeId, userType);
+        try {
+            log.info("Generating refresh token for user [{}]", customerId);
 
-        final RefreshTokenModel refreshToken = new RefreshTokenModel();
+            String token = jwtService.generateRefreshToken(customerId, storeId, userType);
 
-        refreshToken.setUserId(customerId);
-        refreshToken.setStoreId(storeId);
-        refreshToken.setUserType(userType);
-        refreshToken.setToken(token);
-        refreshToken.setExpiresAt(getExpiresAt());
+            RefreshTokenModel refreshToken = new RefreshTokenModel();
 
-        refreshTokenRepository.save(refreshToken);
-        return token;
+            refreshToken.setUserId(customerId);
+            refreshToken.setStoreId(storeId);
+            refreshToken.setUserType(userType);
+            refreshToken.setToken(token);
+            refreshToken.setExpiresAt(getExpiresAt());
+
+            refreshTokenRepository.save(refreshToken);
+
+            log.info("Refresh token successfully generated for user [{}]", customerId);
+            return token;
+        } catch (Exception e) {
+            String msg = String.format("Failed to generated refresh token for user [%s]", customerId);
+            throw new RefreshTokenException(msg, e);
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
     public LoginResponse refresh(String token) {
-        final RefreshTokenModel refreshToken = findByToken(token);
+        RefreshTokenModel refreshToken = findByToken(token);
 
-        if (isExpiredOrRevoked(refreshToken)) {
-            throw new InvalidRefreshTokenException("Refresh token expired or revoked.");
+        log.info("Initiating refresh token update for user [{}]", refreshToken.getUserId());
+
+        try {
+            if (isExpiredOrRevoked(refreshToken)) {
+                throw new InvalidRefreshTokenException("Refresh token expired or revoked.");
+            }
+
+            UserType userType = jwtService.extractUserType(token);
+            List<String> roles = jwtService.extractRoles(token);
+
+            String newAccessToken = jwtService.generateAccessToken(
+                    refreshToken.getUserId(),
+                    refreshToken.getStoreId(),
+                    roles,
+                    userType
+            );
+
+            return new LoginResponse(newAccessToken, refreshToken.getToken());
+        } catch (Exception e) {
+            String msg = String.format("Failed to update refresh token for user [%s]", refreshToken.getUserId());
+            throw new RefreshTokenException(msg, e);
         }
-
-        final UserType userType = jwtService.extractUserType(token);
-        final List<String> roles = jwtService.extractRoles(token);
-
-        final String newAccessToken = jwtService.generateAccessToken(
-                refreshToken.getUserId(),
-                refreshToken.getStoreId(),
-                roles,
-                userType
-        );
-
-        return new LoginResponse(newAccessToken, refreshToken.getToken());
     }
 
     @Override
     @Transactional
     public void logout(String token) {
-        final RefreshTokenModel refreshToken = findByToken(token);
+        RefreshTokenModel refreshToken = findByToken(token);
+
+        log.info("Revoking refresh token for user [{}]", refreshToken.getUserId());
 
         refreshToken.setRevoked(true);
         refreshTokenRepository.save(refreshToken);
+
+        log.info("Refresh token successfully revoked for user [{}]", refreshToken.getUserId());
     }
 
     private RefreshTokenModel findByToken(String token) {

@@ -32,9 +32,9 @@ public class BaseStoreController {
         return ResponseEntity.status(HttpStatus.CREATED).body(baseStoreService.create(request));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BaseStoreResponse> findById(@PathVariable UUID id) {
-        return ResponseEntity.ok(baseStoreService.findById(id));
+    @GetMapping("/{code}")
+    public ResponseEntity<BaseStoreResponse> findByCode(@PathVariable String code) {
+        return ResponseEntity.ok(baseStoreService.findByCode(code));
     }
 
     @GetMapping

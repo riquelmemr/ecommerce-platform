@@ -45,6 +45,11 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.UNAUTHORIZED, "Invalid credentials", request);
     }
 
+    @ExceptionHandler(FeignException.NotFound.class)
+    public ResponseEntity<ErrorResponse> handleFeignNotFound(FeignException.NotFound exception, HttpServletRequest request) {
+        return buildResponse(HttpStatus.UNAUTHORIZED, "Invalid credentials", request);
+    }
+
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<ErrorResponse> handleFeignException(FeignException exception, HttpServletRequest request) {
         HttpStatus status = HttpStatus.resolve(exception.status());

@@ -6,8 +6,6 @@ import com.platform.authservice.enums.UserType;
 
 public interface AuthService {
 
-    LoginResponse login(final LoginRequest request);
-
-    UserType getUserType();
+    LoginResponse authenticate(LoginRequest request, UserType userType);
 
 }

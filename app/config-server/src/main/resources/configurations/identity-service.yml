@@ -8,3 +8,7 @@ spring:
     properties:
       hibernate:
         default_schema: identity
+
+admin:
+  email: ${ADMIN_EMAIL}
+  password: ${ADMIN_PASSWORD}

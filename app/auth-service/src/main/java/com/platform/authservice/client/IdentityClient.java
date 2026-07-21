@@ -1,17 +1,15 @@
 package com.platform.authservice.client;
 
 import com.platform.authservice.dto.request.LoginRequest;
-import com.platform.authservice.dto.response.CustomerResponse;
-import com.platform.authservice.dto.response.EmployeeResponse;
+import com.platform.authservice.dto.request.ValidateCredentialsRequest;
+import com.platform.authservice.dto.response.UserCredentialsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(name = "identity-service", path = "/api/v1")
+@FeignClient(name = "identity-service")
 public interface IdentityClient {
 
-    @PostMapping("/customers/validate-credentials")
-    CustomerResponse validateCustomerCredentials(LoginRequest loginRequest);
+    @PostMapping("/internal/users/validate-credentials")
+    UserCredentialsResponse validateCredentials(ValidateCredentialsRequest request);
 
-    @PostMapping("/employees/validate-credentials")
-    EmployeeResponse validateEmployeeCredentials(LoginRequest loginRequest);
 }

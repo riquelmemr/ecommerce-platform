@@ -38,6 +38,14 @@ public class BaseStoreServiceImpl implements BaseStoreService {
     }
 
     @Override
+    public BaseStoreResponse findByCode(String code) {
+        final BaseStoreModel model = baseStoreRepository.findByCode(code)
+                .orElseThrow(() -> new BaseStoreNotFoundException("Base store not found with code: " + code));
+
+        return baseStoreMapper.toResponse(model);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public BaseStoreResponse findById(UUID id) {
         final BaseStoreModel model = baseStoreRepository.findById(id)

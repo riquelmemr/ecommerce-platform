@@ -5,6 +5,7 @@ import com.platform.authservice.enums.TokenType;
 import com.platform.authservice.enums.UserType;
 import com.platform.authservice.service.jwt.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,8 @@ import java.security.PublicKey;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @Service
@@ -32,29 +35,37 @@ public class JwtServiceImpl implements JwtService {
     private final JwtProperties jwtProperties;
 
     @Override
-    public String generateAccessToken(UUID customerId, UUID storeId, List<String> roles, UserType userType) {
-        return Jwts.builder()
-                .subject(customerId.toString())
-                .claim(STORE_ID_CLAIM, storeId.toString())
+    public String generateAccessToken(UUID userId, UUID storeId, List<String> roles, UserType userType) {
+        JwtBuilder builder = Jwts.builder()
+                .subject(userId.toString())
                 .claim(ROLES_CLAIM, roles)
                 .claim(USER_TYPE_CLAIM, userType)
                 .issuedAt(new Date())
                 .expiration(getExpirationDate(TokenType.ACCESS_TOKEN))
-                .signWith(privateKey, Jwts.SIG.RS256)
-                .compact();
+                .signWith(privateKey, Jwts.SIG.RS256);
+
+        if (nonNull(storeId)) {
+            builder.claim(STORE_ID_CLAIM, storeId.toString());
+        }
+
+        return builder.compact();
     }
 
     @Override
-    public String generateRefreshToken(UUID customerId, UUID storeId, UserType userType) {
-        return Jwts.builder()
-                .subject(customerId.toString())
-                .claim(STORE_ID_CLAIM, storeId.toString())
+    public String generateRefreshToken(UUID userId, UUID storeId, UserType userType) {
+        JwtBuilder builder = Jwts.builder()
+                .subject(userId.toString())
                 .claim(TYPE_CLAIM, TYPE_REFRESH_CLAIM_VALUE)
                 .claim(USER_TYPE_CLAIM, userType)
                 .issuedAt(new Date())
                 .expiration(getExpirationDate(TokenType.REFRESH_TOKEN))
-                .signWith(privateKey, Jwts.SIG.RS256)
-                .compact();
+                .signWith(privateKey, Jwts.SIG.RS256);
+
+        if (nonNull(storeId)) {
+            builder.claim(STORE_ID_CLAIM, storeId.toString());
+        }
+
+        return builder.compact();
     }
 
     @Override

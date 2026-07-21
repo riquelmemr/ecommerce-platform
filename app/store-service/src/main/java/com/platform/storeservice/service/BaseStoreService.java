@@ -11,6 +11,8 @@ public interface BaseStoreService {
 
     BaseStoreResponse create(BaseStoreRequest request);
 
+    BaseStoreResponse findByCode(String code);
+
     BaseStoreResponse findById(UUID id);
 
     List<BaseStoreResponse> findAll();

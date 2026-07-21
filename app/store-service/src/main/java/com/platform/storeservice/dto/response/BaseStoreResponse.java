@@ -13,8 +13,6 @@ public record BaseStoreResponse(
         String logoUrl,
         String primaryColor,
         boolean isActive,
-        String domain,
-        LocalDateTime creationTime,
-        LocalDateTime modifiedTime
+        String domain
 ) {
 }
